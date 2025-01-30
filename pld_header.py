@@ -22,28 +22,27 @@ def process_files(file1, file2):
     ]
     
     if not validate_columns(file1_df, required_columns_file1, "Roaming_SC_Completion.xlsx"):
-        return None, None
+        return None
     if not validate_columns(file2_df, required_columns_file2, "Product Spec Roaming.xlsx"):
-        return None, None
+        return None
     
-    output_buffer = BytesIO()
-    
-    # Extract output file name from the first row of file1_df
-    first_row = file1_df.iloc[0]
-    pld_id = first_row["PLD_ID"]
-    po_id = first_row["POID"]
-    output_file_name = f"{pld_id}_{po_id}.xlsx"  # Constructing filename dynamically
+    files = {}  # Dictionary to store multiple files
 
-    with pd.ExcelWriter(output_buffer, engine="xlsxwriter") as writer:
-        for index, row in file2_df.iterrows():
-            keyword = row["Keywords"]
-            matching_rows = file1_df[file1_df["Keyword"] == keyword]
-            
-            if not matching_rows.empty:
-                po_id = matching_rows["POID"].iloc[0]
-                po_name = matching_rows["POName"].iloc[0]
-                master_keyword = matching_rows["Keyword"].iloc[0]
-                pld_id = matching_rows["PLD_ID"].iloc[0]
+    for _, row in file2_df.iterrows():
+        keyword = row["Keywords"]
+        matching_rows = file1_df[file1_df["Keyword"] == keyword]
+        
+        if not matching_rows.empty:
+            for _, match in matching_rows.iterrows():
+                po_id = match["POID"]
+                po_name = match["POName"]
+                master_keyword = match["Keyword"]
+                pld_id = match["PLD_ID"]
+                
+                output_file_name = f"{pld_id}_{po_id}.xlsx"  # Unique file name
+                output_buffer = BytesIO()
+
+                with pd.ExcelWriter(output_buffer, engine="xlsxwriter") as writer:
                 
                 # Sheet-1 "PO" sheet DataFrame
                 po_df = pd.DataFrame({
