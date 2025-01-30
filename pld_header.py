@@ -43,7 +43,7 @@ def process_files(file1, file2):
                 
                 # Sheet-1 "PO" sheet DataFrame
                 po_df = pd.DataFrame({
-                    "PO ID": [po_id_from_file1],  # Matched POID from file1
+                    "PO ID": [po_id],  # Matched POID from file1
                     "PO Name": [po_name],  # Retrieved from file1
                     "Master Keyword": [master_keyword],  # Now taken from 'Keyword' column in file1
                     "Family": ["roamingSingleCountry"],  # Predefined value
@@ -56,7 +56,7 @@ def process_files(file1, file2):
                 
                 # Sheet-2 Rules-Keyword DataFrame
                 keyword_master_data = {
-                    "PO ID": [po_id_from_file1] * 6,
+                    "PO ID": [po_id] * 6,
                     "Keyword": [
                         row["Keywords"],  # 1st row
                         row["Keywords"],  # 2nd row
@@ -95,7 +95,7 @@ def process_files(file1, file2):
 
                 # Sheet-3 Rules-Alias DataFrame
                 keyword_alias_data = {
-                    "PO ID": [po_id_from_file1] * 2,
+                    "PO ID": [po_id] * 2,
                     "Keyword": [
                         row["Keywords"],  # 1st row
                         row["Keywords"],  # 2nd row
@@ -119,7 +119,7 @@ def process_files(file1, file2):
 
                 # Sheet-4 Rules-Header DataFrame
                 ruleset_header_data = {
-                    "PO ID": [po_id_from_file1] * 3,
+                    "PO ID": [po_id] * 3,
                     "Ruleset ShortName": [""] * 3,
                     "Ruleset Name": [
                         row["Commercial Name"], 
