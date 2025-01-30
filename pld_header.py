@@ -22,11 +22,18 @@ def process_files(file1, file2):
     ]
     
     if not validate_columns(file1_df, required_columns_file1, "Roaming_SC_Completion.xlsx"):
-        return None
+        return None, None
     if not validate_columns(file2_df, required_columns_file2, "Product Spec Roaming.xlsx"):
-        return None
+        return None, None
     
     output_buffer = BytesIO()
+    
+    # Extract output file name from the first row of file1_df
+    first_row = file1_df.iloc[0]
+    pld_id = first_row["PLD_ID"]
+    po_id = first_row["POID"]
+    output_file_name = f"{pld_id}_{po_id}.xlsx"  # Constructing filename dynamically
+
     with pd.ExcelWriter(output_buffer, engine="xlsxwriter") as writer:
         for index, row in file2_df.iterrows():
             keyword = row["Keywords"]
@@ -37,9 +44,6 @@ def process_files(file1, file2):
                 po_name = matching_rows["POName"].iloc[0]
                 master_keyword = matching_rows["Keyword"].iloc[0]
                 pld_id = matching_rows["PLD_ID"].iloc[0]
-
-                # Define output file name
-                output_file_name = f"{pld_id}_{po_id}.xlsx"
                 
                 # Sheet-1 "PO" sheet DataFrame
                 po_df = pd.DataFrame({
@@ -534,7 +538,7 @@ def process_files(file1, file2):
 
 
     output_buffer.seek(0)
-    return output_buffer
+    return output_buffer, output_file_name
 
 st.title("Excel Processing for Roaming Data")
 
