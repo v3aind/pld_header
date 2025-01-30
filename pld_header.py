@@ -32,6 +32,9 @@ def process_files(file1, file2):
 
             if not matching_rows.empty:
                 po_id_from_file1 = matching_rows.iloc[0]
+                po_name = matching_rows["POName"].iloc[0]  # Get first PO_Name match
+                master_keyword = matching_rows["Keyword"].iloc[0]  # Master Keyword now from 'Keyword' column
+                pld_id = matching_rows["PLD_ID"].iloc[0]
                 output_file_name = f"Prodef DMP-{po_id_from_file1}.xlsx"
 
                 # Create a Pandas ExcelWriter
