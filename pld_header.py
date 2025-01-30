@@ -554,8 +554,9 @@ file2 = st.file_uploader("Upload Product Spec Roaming.xlsx", type=["xlsx"])
 
 if file1 and file2:
     if st.button("Process Files"):
-        files = process_files(file1, file2)  # FIXED: No unpacking
-        if files:
+        files = process_files(file1, file2)  # ✅ Now correctly returns a dictionary
+
+        if isinstance(files, dict):  # Ensure it's a dictionary before iterating
             st.success(f"Generated {len(files)} files!")
 
             for file_name, file_data in files.items():
@@ -565,3 +566,5 @@ if file1 and file2:
                     file_name=file_name,
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 )
+        else:
+            st.error("Processing failed. No files generated.")
