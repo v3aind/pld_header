@@ -41,7 +41,13 @@ def process_files(file1, file2):
                 
                 output_file_name = f"{pld_id}_{po_id}.xlsx"  # Unique file name
                 output_buffer = BytesIO()
-
+                with pd.ExcelWriter(output_buffer, engine="xlsxwriter") as writer:
+                    po_df = pd.DataFrame({"PO ID": [po_id]})
+                    po_df.to_excel(writer, sheet_name="PO", index=False)
+    
+                output_buffer.seek(0)  # Reset buffer position
+                files[output_file_name] = output_buffer  # Store in dictionary
+                
                 with pd.ExcelWriter(output_buffer, engine="xlsxwriter") as writer:
                 
                     # Sheet-1 "PO" sheet DataFrame
@@ -548,7 +554,7 @@ file2 = st.file_uploader("Upload Product Spec Roaming.xlsx", type=["xlsx"])
 
 if file1 and file2:
     if st.button("Process Files"):
-        files = process_files(file1, file2)  # FIXED: Don't unpack
+        files = process_files(file1, file2)  # FIXED: No unpacking
         if files:
             st.success(f"Generated {len(files)} files!")
 
