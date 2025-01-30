@@ -548,7 +548,7 @@ file2 = st.file_uploader("Upload Product Spec Roaming.xlsx", type=["xlsx"])
 
 if file1 and file2:
     if st.button("Process Files"):
-        files = process_files(file1, file2)
+        files = process_files(file1, file2)  # FIXED: Don't unpack
         if files:
             st.success(f"Generated {len(files)} files!")
 
