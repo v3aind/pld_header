@@ -536,8 +536,10 @@ def process_files(file1, file2):
                     dormant_config_df.to_excel(writer, sheet_name="Dormant-Config", index=False)
 
 
-    output_buffer.seek(0)
-    return output_buffer, output_file_name
+                output_buffer.seek(0)
+                return output_buffer, output_file_name
+ 
+return files 
 
 st.title("Excel Processing for Roaming Data")
 
@@ -546,11 +548,14 @@ file2 = st.file_uploader("Upload Product Spec Roaming.xlsx", type=["xlsx"])
 
 if file1 and file2:
     if st.button("Process Files"):
-        output, output_file_name = process_files(file1, file2)
-        if output:
-            st.download_button(
-                label=f"Download {output_file_name}",
-                data=output,
-                file_name=output_file_name,
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+        files = process_files(file1, file2)
+        if files:
+            st.success(f"Generated {len(files)} files!")
+
+            for file_name, file_data in files.items():
+                st.download_button(
+                    label=f"Download {file_name}",
+                    data=file_data,
+                    file_name=file_name,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
