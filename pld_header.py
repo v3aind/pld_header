@@ -28,13 +28,13 @@ def process_files(file1, file2):
             keyword = row["Keywords"]
 
             # Get PO ID from file1_df based on some criteria (e.g., matching keyword)
-            matching_rows = file1_df.loc[file1_df['Keyword'] == keyword, 'POID']
-
+            matching_rows = file1_df.loc[file1_df['Keyword'] == keyword, ['POID', 'POName', 'Keyword', 'PLD_ID']]
+            
             if not matching_rows.empty:
-                po_id_from_file1 = matching_rows.iloc[0]
-                po_name = matching_rows["POName"].iloc[0]  # Get first PO_Name match
-                master_keyword = matching_rows["Keyword"].iloc[0]  # Master Keyword now from 'Keyword' column
-                pld_id = matching_rows["PLD_ID"].iloc[0]
+                po_id_from_file1 = matching_rows.iloc[0]["POID"]  # Get first POID match
+                po_name = matching_rows.iloc[0]["POName"]  # Get first POName match
+                master_keyword = matching_rows.iloc[0]["Keyword"]  # Get first Keyword match
+                pld_id = matching_rows.iloc[0]["PLD_ID"]  # Get first PLD_ID match
                 output_file_name = f"Prodef DMP-{po_id_from_file1}.xlsx"
 
                 # Create a Pandas ExcelWriter
