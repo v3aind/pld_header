@@ -35,7 +35,7 @@ def process_files(file1, file2):
                 po_name = matching_rows.iloc[0]["POName"]  # Get first POName match
                 master_keyword = matching_rows.iloc[0]["Keyword"]  # Get first Keyword match
                 pld_id = matching_rows.iloc[0]["PLD_ID"]  # Get first PLD_ID match
-                output_file_name = f"Prodef DMP-{po_id_from_file1}.xlsx"
+                output_file_name = f"{pld_id}_{po_id_from_file1}.xlsx"
 
                 # Create a Pandas ExcelWriter
                 with io.BytesIO() as output:
