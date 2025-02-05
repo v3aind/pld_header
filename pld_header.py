@@ -11,9 +11,14 @@ file2 = st.file_uploader("Upload Product Spec Roaming.xlsx", type=["xlsx"])
 # Function to process the uploaded files and provide download link
 def process_files(file1, file2):
     if file1 is not None and file2 is not None:
+        st.write("File 1 uploaded successfully!")
+        st.write("File 2 uploaded successfully!")
+
         # Load input files
         file1_df = pd.read_excel(file1)
         file2_df = pd.read_excel(file2)
+
+        st.write("Columns in Product Spec Roaming.xlsx:", file2_df.columns.tolist())
 
         # Validate required columns
         required_columns_file2 = ["Family", "is Dorman MOBO", "Keyword Active", "Keywords", "Shortcode", "Unreg", "Keyword Alias1", "Keyword Alias2", "Commercial Name", "SIM Action", "SIM Validity", "Package Validity", "Renewal", "PricePre"]
@@ -29,6 +34,7 @@ def process_files(file1, file2):
 
             # Get PO ID from file1_df based on some criteria (e.g., matching keyword)
             matching_rows = file1_df.loc[file1_df['Keyword'] == keyword, ['POID', 'POName', 'Keyword', 'PLD_ID']]
+            st.write(f"Matching rows for keyword '{keyword}':", matching_rows)
             
             if not matching_rows.empty:
                 po_id_from_file1 = matching_rows.iloc[0]["POID"]  # Get first POID match
@@ -36,6 +42,7 @@ def process_files(file1, file2):
                 master_keyword = matching_rows.iloc[0]["Keyword"]  # Get first Keyword match
                 pld_id = matching_rows.iloc[0]["PLD_ID"]  # Get first PLD_ID match
                 output_file_name = f"{pld_id}_{po_id_from_file1}.xlsx"
+                st.write("Output file name:", output_file_name)
 
                 # Create a Pandas ExcelWriter
                 with io.BytesIO() as output:
@@ -299,7 +306,7 @@ def process_files(file1, file2):
                                 {
                                         "Ruleset ShortName": ["sample"],  # First row value
                                         "GSI GRP Pack-Group ID": ["sample"],  # First row value
-                                        "Action": ["NO_CHANGE"],  # First row value
+                                        "Action": ["NO_CHANGE"],  # First row value,
                                 }
                         )
                         gsi_grp_pack_df.to_excel(writer, sheet_name="Rules-GSI GRP Pack", index=False)
