@@ -45,7 +45,7 @@ def process_files(file1, file2):
                                 "PO ID": [po_id_from_file1],  # Matched POID from file1
                                 "PO Name": [po_name],  # Retrieved from file1
                                 "Master Keyword": [master_keyword],  # Now taken from 'Keyword' column in file1
-                                "Family": ["roamingSingleCountry"],  # Predefined value
+                                "Family": ["roamingSingleCountry"],  # Predefined value --> need to pick from file2
                                 "PO Type": ["ADDON"],  # Predefined value
                                 "Product Category": ["b2cMobile"],  # Predefined value
                                 "Payment Type": ["Prepaid,Postpaid"],  # Predefined value
@@ -57,20 +57,20 @@ def process_files(file1, file2):
                         keyword_master_data = {
                                 "PO ID": [po_id_from_file1] * 6,
                                 "Keyword": [
-                                        row["Keywords"],  # 1st row
-                                        row["Keywords"],  # 2nd row
-                                        row["Keywords"],  # 3rd row
-                                        "AKTIF_P26",      # 4th row
-                                        "AKTIF",          # 5th row
-                                        row["Unreg"]      # 6th row from file2 column "Unreg"
+                                        row["Keywords"],        # 1st row
+                                        row["Keywords"],        # 2nd row
+                                        row["Keywords"],        # 3rd row
+                                        row["Keyword Active"],  # 4th row -> pick from file2 keyword aktif
+                                        "AKTIF",                # 5th row -> fixed
+                                        row["Unreg"]            # 6th row from file2 column "Unreg"
                                 ],
                                 "Short Code": [
-                                        str(int(row["Shortcode"])) if not pd.isna(row["Shortcode"]) else "",  # 1st row from file2 without .0
-                                        "124",                        # 2nd row
-                                        "929",                        # 3rd row
-                                        "122",                        # 4th row
-                                        "122",                        # 5th row
-                                        "122"                         # 6th row
+                                        str(int(row["Shortcode"])) if not pd.isna(row["Shortcode"]) else "",    # 1st row from file2 without .0
+                                        "124",                                                                  # 2nd row -> fixed
+                                        "929",                                                                  # 3rd row -> fixed
+                                        str(int(row["Shortcode"])) if not pd.isna(row["Shortcode"]) else "",    # 4th row -> pick from file2
+                                        str(int(row["Shortcode"])) if not pd.isna(row["Shortcode"]) else "",    # 5th row -> pick from file2
+                                        str(int(row["Shortcode"])) if not pd.isna(row["Shortcode"]) else ""     # 6th row -> pick from file2
                                 ],
                                 "Keyword Type": [
                                         "Master",          # 1st row
@@ -94,44 +94,50 @@ def process_files(file1, file2):
 
                         # Sheet-3 Rules-Alias DataFrame
                         keyword_alias_data = {
-                                "PO ID": [po_id_from_file1] * 2,
-                                "Keyword": [
-                                        row["Keywords"],  # 1st row
-                                        row["Keywords"],  # 2nd row
-                                ],
-                                "Short Code": [
-                                        str(int(row["Shortcode"])),  # 1st row from file2 without .0
-                                        str(int(row["Shortcode"])),  # 2nd row without .0
-                                ],
-                                "Keyword Aliases": [
-                                        row["Keyword Alias1"],  # 1st row
-                                        row["Keyword Alias2"],  # 2nd row
-                                ]
+                            "PO ID": [],
+                            "Keyword": [],
+                            "Short Code": [],
+                            "Keyword Aliases": [],
+                            "Action": [],
                         }
-                        keyword_alias_df = pd.DataFrame(keyword_alias_data)
-  
-                        # Add the new column "Action" with the value "INSERT" for all rows
-                        keyword_alias_df["Action"] = "INSERT"
 
-                        # Save the processed DataFrame to the output Excel file
+                        # Check if both Keyword Alias1 and Keyword Alias2 are empty or NaN
+                        if pd.isna(row["Keyword Alias1"]) and pd.isna(row["Keyword Alias2"]):
+                            sample_data = ["sample", "sample", "sample", "sample", "NO_CHANGE"]
+                            for _ in range(2):
+                                keyword_alias_data["PO ID"].append(sample_data[0])
+                                keyword_alias_data["Keyword"].append(sample_data[1])
+                                keyword_alias_data["Short Code"].append(sample_data[2])
+                                keyword_alias_data["Keyword Aliases"].append(sample_data[3])
+                                keyword_alias_data["Action"].append(sample_data[4])
+                        else:
+                            keyword_alias_data["PO ID"].extend([po_id_from_file1] * 2)
+                            keyword_alias_data["Keyword"].extend([row["Keywords"]] * 2)
+                            keyword_alias_data["Short Code"].extend([
+                                str(int(row["Shortcode"])) if not pd.isna(row["Shortcode"]) else "sample"
+                            ] * 2)
+                            keyword_alias_data["Keyword Aliases"].extend([row["Keyword Alias1"], row["Keyword Alias2"]])
+                            keyword_alias_data["Action"].extend(["INSERT"] * 2)
+
+                        # Convert to DataFrame and save to Excel
+                        keyword_alias_df = pd.DataFrame(keyword_alias_data)
                         keyword_alias_df.to_excel(writer, sheet_name="Rules-Alias", index=False)
 
                         # Sheet-4 Rules-Header DataFrame
                         ruleset_header_data = {
-                                "PO ID": [po_id_from_file1] * 3,
-                                "Ruleset ShortName": [""] * 3,
-                                "Ruleset Name": [
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"]
-                                ],
-                                "Keyword": [row["Keywords"], "AKTIF_P26", row["Keywords"]],
-                                "Family": ["ROAMINGSINGLECOUNTRY"] *3,
+                                "PO ID": [po_id_from_file1] * 6,
+                                "Ruleset ShortName": [""] * 6,
+                                "Ruleset Name": [row["Commercial Name"]] * 6, 
+                                "Keyword": [row["Keywords"], "AKTIF_P26", row["Keywords"],row["Keywords"], "AKTIF_P26", row["Keywords"]],
+                                "Family": ["ROAMINGSINGLECOUNTRY"] *6,
                                 "Family Code": "RSC",
-                                "Variant Type": ["00", "00", "00"],
-                                "SubVariant Type": ["PRE00", "ACT00", "00000"],
-                                "Ruleset Version": ["1", "1", "1"],
+                                "Variant Type": ["00", "00", "00", "GF", "GF", "GF"],
+                                "SubVariant Type": ["PRE00", "ACT00", "00000", "PRE00", "ACT00", "00000"],
+                                "Ruleset Version": ["1", "1", "1", "1", "1", "1"],
                                 "Commercial Name Bahasa": [
+                                        row["Commercial Name"], 
+                                        row["Commercial Name"], 
+                                        row["Commercial Name"],
                                         row["Commercial Name"], 
                                         row["Commercial Name"], 
                                         row["Commercial Name"]
@@ -139,17 +145,23 @@ def process_files(file1, file2):
                                 "Commercial Name English": [
                                         row["Commercial Name"], 
                                         row["Commercial Name"], 
+                                        row["Commercial Name"],
+                                        row["Commercial Name"], 
+                                        row["Commercial Name"], 
                                         row["Commercial Name"]
                                 ],
                                 "Commercial Description": [
                                         row["Commercial Name"], 
                                         row["Commercial Name"], 
+                                        row["Commercial Name"], 
+                                        row["Commercial Name"],
+                                        row["Commercial Name"], 
                                         row["Commercial Name"]
                                 ],
-                                "Remarks": [""] *3,
-                                "Keyword Type": ["", "", ""],
-                                "Reference Ruleset ShortName": ["", "", ""],
-                                "Reference Keyword": ["", "", ""],
+                                "Remarks": [""] *6,
+                                "Keyword Type": ["", "", "", "", "", ""],
+                                "Reference Ruleset ShortName": ["", "", "", "", "", ""],
+                                "Reference Keyword": ["", "", "", "", "", ""],
                         }
 
                         ruleset_header_df = pd.DataFrame(ruleset_header_data)
