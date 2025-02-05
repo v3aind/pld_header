@@ -132,46 +132,49 @@ def process_files(file1, file2):
 
                         # Sheet-4 Rules-Header DataFrame
                         ruleset_header_data = {
-                                "PO ID": [po_id_from_file1] * 6,
-                                "Ruleset ShortName": [""] * 6,
-                                "Ruleset Name": [row["Commercial Name"]] * 6, 
-                                "Keyword": [row["Keywords"], "AKTIF_P26", row["Keywords"],row["Keywords"], "AKTIF_P26", row["Keywords"]],
-                                "Family": ["ROAMINGSINGLECOUNTRY"] *6,
-                                "Family Code": "RSC",
-                                "Variant Type": ["00", "00", "00", "GF", "GF", "GF"],
-                                "SubVariant Type": ["PRE00", "ACT00", "00000", "PRE00", "ACT00", "00000"],
-                                "Ruleset Version": ["1", "1", "1", "1", "1", "1"],
-                                "Commercial Name Bahasa": [
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"],
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"]
-                                ],
-                                "Commercial Name English": [
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"],
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"]
-                                ],
-                                "Commercial Description": [
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"],
-                                        row["Commercial Name"], 
-                                        row["Commercial Name"]
-                                ],
-                                "Remarks": [""] *6,
-                                "Keyword Type": ["", "", "", "", "", ""],
-                                "Reference Ruleset ShortName": ["", "", "", "", "", ""],
-                                "Reference Keyword": ["", "", "", "", "", ""],
+                            "PO ID": [po_id_from_file1] * 2,
+                            "Ruleset ShortName": [""] * 2,
+                            "Ruleset Name": [row["Commercial Name"]] * 2,
+                            "Keyword": [row["Keywords"], row["Keywords"]],
+                            "Family": ["ROAMINGSINGLECOUNTRY"] * 2,
+                            "Family Code": ["RSC"] * 2,
+                            "Variant Type": ["00", "GF"],
+                            "SubVariant Type": ["00000", "00000"]
                         }
 
+                        # Check if Dorman = Yes, then append additional rows
+                        if row["Dorman"] == "Yes":
+                            dorman_variants = ["Y1", "Y2", "Y3", "Y4"]
+                            dorman_keywords = [row["Keywords"]] * 4  # Use the provided keyword parameter
+
+                            additional_rows = {
+                                "PO ID": [po_id_from_file1] * 4,
+                                "Ruleset ShortName": [""] * 4,
+                                "Ruleset Name": [row["Commercial Name"]] * 4,
+                                "Keyword": dorman_keywords,
+                                "Family": ["ROAMINGSINGLECOUNTRY"] * 4,
+                                "Family Code": ["RSC"] * 4,
+                                "Variant Type": dorman_variants,
+                                "SubVariant Type": ["00000"] * 4  # Adjust if needed
+                            }
+
+                            # Append the new data to existing ruleset_header_data
+                            for key in ruleset_header_data:
+                                ruleset_header_data[key].extend(additional_rows[key])
+
+                        # Convert to DataFrame
                         ruleset_header_df = pd.DataFrame(ruleset_header_data)
+
+                        # Add the new column "Action" with the value "INSERT" for all rows
+                        ruleset_header_df["Ruleset Version"]: "1"
+                        ruleset_header_df["Commercial Name Bahasa"]: row["Commercial Name"]
+                        ruleset_header_df["Commercial Name English"]: row["Commercial Name"]
+                        ruleset_header_df["Commercial Description"]: row["Commercial Name"]
+                        ruleset_header_df["Remarks"]: ""
+                        ruleset_header_df["Keyword Type"]: ""
+                        ruleset_header_df["Reference Ruleset ShortName"]: ""
+                        ruleset_header_df["Reference Keyword"]: ""
+                        ruleset_header_df["Action"] = "INSERT"
 
                         # Ensure the "Short Code" column exists and manipulate it as needed
                         if "Ruleset Version" in ruleset_header_df.columns:
@@ -186,9 +189,6 @@ def process_files(file1, file2):
 
                         # Convert to numeric, coercing errors to NaN, then fill NaN with 0 and convert to integer
                         ruleset_header_df["Ruleset Version"] = pd.to_numeric(ruleset_header_df["Ruleset Version"], errors="coerce").fillna(0).astype(int)
-
-                        # Add the new column "Action" with the value "INSERT" for all rows
-                        ruleset_header_df["Action"] = "INSERT"
 
                         # Save the processed DataFrame to the output Excel file
                         ruleset_header_df.to_excel(writer, sheet_name="Rules-Header", index=False)
