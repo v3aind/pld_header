@@ -52,8 +52,8 @@ def process_files(file1, file2):
                                 "PO ID": [po_id_from_file1],  # Matched POID from file1
                                 "PO Name": [po_name],  # Retrieved from file1
                                 "Master Keyword": [master_keyword],  # Now taken from 'Keyword' column in file1
-                                "Family": ["roamingSingleCountry"],  # Predefined value --> need to pick from file2
-                                "PO Type": ["ADDON"],  # Predefined value
+                                "Family": row["Family"],  # Predefined value --> need to pick from file2
+                                "PO Type": row["Family Code"],  # Predefined value
                                 "Product Category": ["b2cMobile"],  # Predefined value
                                 "Payment Type": ["Prepaid,Postpaid"],  # Predefined value
                                 "Action": ["NO_CHANGE"],  # Predefined value
@@ -136,24 +136,24 @@ def process_files(file1, file2):
                             "Ruleset ShortName": [""] * 2,
                             "Ruleset Name": [row["Commercial Name"]] * 2,
                             "Keyword": [row["Keywords"], row["Keywords"]],
-                            "Family": ["ROAMINGSINGLECOUNTRY"] * 2,
-                            "Family Code": ["RSC"] * 2,
+                            "Family": [row["Family"]] * 2,
+                            "Family Code": [row["Family Code"]] * 2,
                             "Variant Type": ["00", "GF"],
                             "SubVariant Type": ["00000", "00000"]
                         }
 
                         # Check if Dorman = Yes, then append additional rows
                         if row["is Dorman MOBO"] == "Yes":
-                            dorman_variants = ["Y1", "Y2", "Y3", "Y4"]
-                            dorman_keywords = [row["Keywords"]] * 4  # Use the provided keyword parameter
+                            dorman_variants = ["Y1", "Y3", "Y2", "Y4"]
+                            dorman_keywords = [row["Keywords"]] * 2 + [row["Keyword Active"]] * 2 
 
                             additional_rows = {
                                 "PO ID": [po_id_from_file1] * 4,
                                 "Ruleset ShortName": [""] * 4,
                                 "Ruleset Name": [row["Commercial Name"]] * 4,
                                 "Keyword": dorman_keywords,
-                                "Family": ["ROAMINGSINGLECOUNTRY"] * 4,
-                                "Family Code": ["RSC"] * 4,
+                                "Family": [row["Family"]] * 4,
+                                "Family Code": [row["Family Code"]] * 4,
                                 "Variant Type": dorman_variants,
                                 "SubVariant Type": ["00000"] * 4  # Adjust if needed
                             }
