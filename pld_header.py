@@ -176,20 +176,6 @@ def process_files(file1, file2):
                         ruleset_header_df["Reference Keyword"]: ""
                         ruleset_header_df["Action"] = "INSERT"
 
-                        # Ensure the "Short Code" column exists and manipulate it as needed
-                        if "Ruleset Version" in ruleset_header_df.columns:
-                                # Convert to string, strip whitespace, and replace "nan" with empty strings
-                                ruleset_header_df["Ruleset Version"] = ruleset_header_df["Ruleset Version"].astype(str).str.strip().replace("nan", "")
-                        else:
-                                # If "Ruleset Version" column is missing, create it with default empty strings
-                                ruleset_header_df["Ruleset Version"] = ""
-
-                        # Replace any NaN with empty strings explicitly
-                        ruleset_header_df["Ruleset Version"] = ruleset_header_df["Ruleset Version"].fillna("")
-
-                        # Convert to numeric, coercing errors to NaN, then fill NaN with 0 and convert to integer
-                        ruleset_header_df["Ruleset Version"] = pd.to_numeric(ruleset_header_df["Ruleset Version"], errors="coerce").fillna(0).astype(int)
-
                         # Save the processed DataFrame to the output Excel file
                         ruleset_header_df.to_excel(writer, sheet_name="Rules-Header", index=False)
 
