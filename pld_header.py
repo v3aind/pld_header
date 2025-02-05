@@ -21,7 +21,7 @@ def process_files(file1, file2):
         st.write("Columns in Product Spec Roaming.xlsx:", file2_df.columns.tolist())
 
         # Validate required columns
-        required_columns_file2 = ["Family", "is Dorman (MOBO)", "Keyword Active", "Keywords", "Shortcode", "Unreg", "Keyword Alias1", "Keyword Alias2", "Commercial Name", "SIM Action", "SIM Validity", "Package Validity", "Renewal", "PricePre"]
+        required_columns_file2 = ["Family", "is Dorman MOBO", "Keyword Active", "Keywords", "Shortcode", "Unreg", "Keyword Alias1", "Keyword Alias2", "Commercial Name", "SIM Action", "SIM Validity", "Package Validity", "Renewal", "PricePre"]
         for col in required_columns_file2:
             if col not in file2_df.columns:
                 st.error(f"Missing required column '{col}' in Product Spec Roaming.xlsx")
@@ -143,7 +143,7 @@ def process_files(file1, file2):
                         }
 
                         # Check if Dorman = Yes, then append additional rows
-                        if row["Dorman"] == "Yes":
+                        if row["is Dorman MOBO"] == "Yes":
                             dorman_variants = ["Y1", "Y2", "Y3", "Y4"]
                             dorman_keywords = [row["Keywords"]] * 4  # Use the provided keyword parameter
 
