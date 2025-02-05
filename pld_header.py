@@ -166,14 +166,14 @@ def process_files(file1, file2):
                         ruleset_header_df = pd.DataFrame(ruleset_header_data)
 
                         # Add the new column "Action" with the value "INSERT" for all rows
-                        ruleset_header_df["Ruleset Version"]: "1"
-                        ruleset_header_df["Commercial Name Bahasa"]: row["Commercial Name"]
-                        ruleset_header_df["Commercial Name English"]: row["Commercial Name"]
-                        ruleset_header_df["Commercial Description"]: row["Commercial Name"]
-                        ruleset_header_df["Remarks"]: ""
-                        ruleset_header_df["Keyword Type"]: ""
-                        ruleset_header_df["Reference Ruleset ShortName"]: ""
-                        ruleset_header_df["Reference Keyword"]: ""
+                        ruleset_header_df["Ruleset Version"]= "1"
+                        ruleset_header_df["Commercial Name Bahasa"]= row["Commercial Name"]
+                        ruleset_header_df["Commercial Name English"]= row["Commercial Name"]
+                        ruleset_header_df["Commercial Description"]= row["Commercial Name"]
+                        ruleset_header_df["Remarks"]= ""
+                        ruleset_header_df["Keyword Type"]= ""
+                        ruleset_header_df["Reference Ruleset ShortName"]= ""
+                        ruleset_header_df["Reference Keyword"]= ""
                         ruleset_header_df["Action"] = "INSERT"
 
                         # Save the processed DataFrame to the output Excel file
